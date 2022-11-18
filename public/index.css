@@ -1,0 +1,27 @@
+img {
+  border-bottom: solid; 
+  border-width:thin; 
+  display:block; 
+  width:100%; 
+  -webkit-user-select:none; 
+  margin:auto; 
+  background-color: hsl(0, 0%, 25%);
+}
+
+div {
+  border-bottom:solid; 
+  border-width:thin; 
+  display:flex; 
+  align-items:center; 
+  justify-content:start
+}
+
+video {
+  height:60px; 
+  width:106.07px
+}
+
+span {
+  margin-left:10px; 
+  color:white; 
+}

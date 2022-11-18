@@ -8,10 +8,13 @@ const shinobi_host = `http://${shinobi_props.ip}:${shinobi_props.port}`
 // http://xxx.xxx.xxx.xxx/[API KEY]/monitor/[GROUP KEY]
 const monitorsArray = await (await fetch(`${shinobi_host}/${shinobi_props.apikey}/monitor/${shinobi_props.groupkey}`)).json()
 
+// to be populated with a monitor id => name mapping for use below
+const monitor_id_to_name = {}
+
 // insert each monitor into html body
 monitorsArray.forEach(monitorElement => {
+  monitor_id_to_name[monitorElement.mid] = monitorElement.name
   var img = document.createElement('img')
-  img.style = 'display: block; width:100%; -webkit-user-select:none; margin:auto; background-color: hsl(0, 0%, 25%);'
   img.src = shinobi_host + monitorElement.streams[0]
   document.body.appendChild(img)
 })
@@ -20,41 +23,44 @@ monitorsArray.forEach(monitorElement => {
 // http://xxx.xxx.xxx.xxx/[API KEY]/videos/[GROUP KEY]
 const videosArray = await (await fetch(`${shinobi_host}/${shinobi_props.apikey}/videos/${shinobi_props.groupkey}`)).json()
 
-//console.log(videosArray)
-
 // insert each video into html body
 videosArray.videos.forEach(videoElement => {
-  console.log(videoElement)
 
-  const diff = time_transpired(videoElement.end)
-  console.log(diff)
+  // one div row per video
+  var div = document.createElement('div')
 
+  // video clip
   var video = document.createElement('video')
   video.setAttribute('controls', '')
-  video.style = 'display: block; width:100%; height:60px; background:linear-gradient(black, grey);'
+  video.type = 'video/mp4'
+  video.src = shinobi_host + videoElement.actionUrl + '#t=0.001'
 
-  var source = document.createElement('source')
-  source.type = 'video/mp4'
-  source.src = shinobi_host + videoElement.actionUrl
-  source.innerText = 'your browser does not support HTML5 video'
+  // video text description
+  var span = document.createElement('span')
+  const diff = time_transpired(videoElement.end)
+  span.innerText = `${monitor_id_to_name[videoElement.mid]} - ${diff}`
 
-  video.appendChild(source)
-  document.body.appendChild(video)
-  //console.log(video)
+  // build dom and insert into body
+  div.appendChild(video)
+  div.appendChild(span)
+  document.body.appendChild(div)
 
 })
 
+/* calculate human readable time lapsed */
 function time_transpired (then){
 
   const diff = (Date.now() - Date.parse(then)) / 1000
 
-  if (diff < 60) // < 1 minute
-    return `${Math.trunc(diff)} seconds ago`;
-  else if (diff < (60 * 60)) // < 1 hour
-    return `${Math.trunc(diff / 60)} minutes ago`;
-  else if (diff < (60 * 60 * 24)) // < 1 day
-    return `${Math.trunc(diff / (60 * 60))} hours ago`;
-  else
-    return `${Math.trunc(diff / (60 * 60 * 24))} days ago`;
+  switch (true) {
+    case (diff < 60):
+      return `${Math.trunc(diff)} seconds ago`
+    case (diff < 60 * 60):
+      return `${Math.trunc(diff / 60)} minutes ago`
+    case (diff < 60 * 60 * 24):
+      return `${Math.trunc(diff / (60 * 60))} hours ago`
+    default:
+      return `${Math.trunc(diff / (60 * 60 * 24))} days ago`
+  }
 
 }

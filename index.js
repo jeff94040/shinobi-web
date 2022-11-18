@@ -28,9 +28,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // Set folder location for static content
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Return shinobi props to front-end
 app.get('/shinobi-props', async (req, res) => {
-  // get monitor ids
-  // http://192.168.0.9:8080/XQhKAU3sBQ1ShqhgDCae6xCub4zMjI/monitor/4z2nmxO6lN
 
   const shinobi_properties = {
     'ip': process.env.SHINOBI_IP,
@@ -38,15 +37,7 @@ app.get('/shinobi-props', async (req, res) => {
     'groupkey': process.env.SHINOBI_GROUP_KEY,
     'apikey': process.env.SHINOBI_API_KEY
   }
-/*
-  shinobi_ip='192.168.0.9'
-const shinobi_port='8080'
-const shinobi_group_key='4z2nmxO6lN'
-const shinobi_api_key='XQhKAU3sBQ1ShqhgDCae6xCub4zMjI'
-*/
-  //console.log(data[0].mid)
     res.send(shinobi_properties)
-    //res.sendStatus(200)
 })
 
 app.listen(port, () => {
