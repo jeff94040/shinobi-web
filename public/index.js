@@ -24,9 +24,14 @@ const videosArray = await (await fetch(`${shinobi_host}/${shinobi_props.apikey}/
 
 // insert each video into html body
 videosArray.videos.forEach(videoElement => {
+  console.log(videoElement)
+
+  const diff = time_transpired(videoElement.end)
+  console.log(diff)
+
   var video = document.createElement('video')
   video.setAttribute('controls', '')
-  video.style = 'display: block; width:100%; height:60px; background-color: hsl(0, 0%, 25%);'
+  video.style = 'display: block; width:100%; height:60px; background:linear-gradient(black, grey);'
 
   var source = document.createElement('source')
   source.type = 'video/mp4'
@@ -35,6 +40,21 @@ videosArray.videos.forEach(videoElement => {
 
   video.appendChild(source)
   document.body.appendChild(video)
-  console.log(video)
+  //console.log(video)
 
 })
+
+function time_transpired (then){
+
+  const diff = (Date.now() - Date.parse(then)) / 1000
+
+  if (diff < 60) // < 1 minute
+    return `${Math.trunc(diff)} seconds ago`;
+  else if (diff < (60 * 60)) // < 1 hour
+    return `${Math.trunc(diff / 60)} minutes ago`;
+  else if (diff < (60 * 60 * 24)) // < 1 day
+    return `${Math.trunc(diff / (60 * 60))} hours ago`;
+  else
+    return `${Math.trunc(diff / (60 * 60 * 24))} days ago`;
+
+}
